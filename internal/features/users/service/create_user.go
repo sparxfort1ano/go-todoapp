@@ -1,0 +1,25 @@
+package service
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
+)
+
+// CreateUser enforces business rules (like length and symbol checks) on the user domain.
+func (s *UsersService) CreateUser(
+	ctx context.Context,
+	user domain.User,
+) (domain.User, error) {
+	if err := user.Validate(); err != nil {
+		return domain.User{}, fmt.Errorf("validate user domain: %w", err)
+	}
+
+	user, err := s.usersRepository.CreateUser(ctx, user)
+	if err != nil {
+		return domain.User{}, fmt.Errorf("create user: %w", err)
+	}
+
+	return user, nil
+}
