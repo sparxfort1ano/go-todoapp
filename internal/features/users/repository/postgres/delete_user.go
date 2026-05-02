@@ -7,8 +7,6 @@ import (
 	errs "github.com/sparxfort1ano/go-todoapp/internal/core/errors"
 )
 
-// DeleteUser executes the SQL query to delete the given row
-// according to the user identificator.
 func (r *UsersRepository) DeleteUser(
 	ctx context.Context,
 	id int,
@@ -17,8 +15,8 @@ func (r *UsersRepository) DeleteUser(
 	defer cancel()
 
 	query := `
-	DELETE from todoapp.users
-	WHERE id=$1
+	DELETE FROM todoapp.users
+	WHERE id=$1;
 	`
 
 	cmdTag, err := r.pool.Exec(ctx, query, id)

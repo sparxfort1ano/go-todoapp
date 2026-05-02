@@ -94,8 +94,9 @@ func (h HTTPResponseHandler) ErrorResponse(err error, msg string) {
 	)
 }
 
-// PanicResponse handles unexpected panics by logging the stack trace
-// and returning Internal Server Error to the client.
+// PanicResponse logs the recovered panic information
+// and sends an Internal Server Error (500) response to the client.
+// It is intended to be called from a panic recovery middleware.
 func (h *HTTPResponseHandler) PanicResponse(p any, msg string) {
 	err := fmt.Errorf("unexpected panic: %v", p)
 	h.log.Error(msg, zap.Error(err))

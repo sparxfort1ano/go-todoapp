@@ -7,9 +7,6 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 )
 
-// CreateUser executes the SQL query to insert a new user into the database.
-// It applies a configured operation timeout, maps the resulting database row
-// back into a domain enitity.
 func (r *UsersRepository) CreateUser(
 	ctx context.Context,
 	user domain.User,

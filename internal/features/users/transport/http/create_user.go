@@ -19,13 +19,11 @@ type CreateUserRequest struct {
 type CreateUserResponse UserDTOResponse
 
 // CreateUser processes the HTTP request to register a new user.
-// It decodes the payload, delegates the logic to the service layer and writes the JSON response.
+// It decodes the payload and writes the JSON response.
 func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)
 	responseHandler := response.NewHTTPResponseHandler(log, w)
-
-	log.Debug("invoke CreateUser handler")
 
 	var req CreateUserRequest
 	if err := request.DecodeAndValidateRequest(r, &req); err != nil {
@@ -45,8 +43,6 @@ func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	responseHandler.JSONResponse(response, http.StatusCreated)
 }
 
-// domainFromDTO creates a new instance of user domain with the unitialized
-// id and version fields.
 func domainFromDTO(dto CreateUserRequest) domain.User {
 	return domain.NewUserUninialized(dto.FullName, dto.PhoneNumber)
 }

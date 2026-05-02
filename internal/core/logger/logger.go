@@ -30,7 +30,7 @@ func IntoContext(ctx context.Context, log *Logger) context.Context {
 	return context.WithValue(ctx, logKey, log)
 }
 
-// FromContext checks if there is logger in the context tree.
+// FromContext checks if there is a logger in the context tree.
 // It panics if there is no logger.
 // Panic is allowed: the application is blind
 // without a properly configured logger in the context.
@@ -67,7 +67,7 @@ func NewLogger(cfg config) (*Logger, error) {
 	}
 
 	zapConfig := zap.NewDevelopmentEncoderConfig()
-	zapConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02T15:04:05.000000") // microseconds are needed
+	zapConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02T15:04:05.000000")
 
 	zapEncoder := zapcore.NewConsoleEncoder(zapConfig)
 

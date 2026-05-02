@@ -7,7 +7,6 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 )
 
-// CreateUser enforces business rules (like length and symbol checks) on the user domain.
 func (s *UsersService) CreateUser(
 	ctx context.Context,
 	user domain.User,

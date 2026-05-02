@@ -11,18 +11,19 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/request"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/response"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/types"
-	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/utils"
 )
 
+// PatchUserRequest represents the incoming JSON body for a partial user update (DTO).
 type PatchUserRequest struct {
 	FullName    types.Nullable[string] `json:"full_name"`
 	PhoneNumber types.Nullable[string] `json:"phone_number"`
 }
 
-type PatchUserResponse UserDTOResponse
-
 var phoneRegex = regexp.MustCompile(`^\+[0-9]+$`)
 
+// Validate performs early HTTP-level validation on the incoming payload.
+// It ensures that string lengths and formats (like phone numbers) are correct
+// before passing the data down to the domain layer.
 func (r *PatchUserRequest) Validate() error {
 	if r.FullName.Set {
 		if r.FullName.Value == nil {
@@ -51,14 +52,17 @@ func (r *PatchUserRequest) Validate() error {
 	return nil
 }
 
+// PatchUserResponse represents the outgoing JSON body after a partial user update (JSON).
+type PatchUserResponse UserDTOResponse
+
+// PatchUser processes the HTTP request to partially update an existing user
+// with the given id, validating the incoming JSON body.
 func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)
 	responseHandler := response.NewHTTPResponseHandler(log, w)
 
-	log.Debug("invoke PatchUser handler")
-
-	userID, err := utils.GetIntPathValue(r, "id")
+	userID, err := request.GetIntPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -92,8 +96,8 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func userPatchFromRequest(request PatchUserRequest) domain.UserPatch {
-	return domain.UserPatch{
-		FullName:    request.FullName.ToDomain(),
-		PhoneNumber: request.PhoneNumber.ToDomain(),
-	}
+	return domain.NewUserPatch(
+		request.FullName.ToDomain(),
+		request.PhoneNumber.ToDomain(),
+	)
 }

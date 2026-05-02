@@ -11,7 +11,7 @@ import (
 )
 
 // UsersHTTPHandler handles HTTP requests related to user management.
-// All of its User methods delegate the logic to the service layer.
+// All of its methods delegate the logic to the service layer.
 type UsersHTTPHandler struct {
 	usersService UsersService
 }
@@ -19,15 +19,17 @@ type UsersHTTPHandler struct {
 // UsersService defines the contract that decouples the HTTP transport layer
 // from the underlying domain logic.
 type UsersService interface {
+	// CreateUser enforces business rules (like length and symbol checks) on the user domain.
 	CreateUser(
 		ctx context.Context,
 		user domain.User,
 	) (domain.User, error)
 
+	// GetUsers enforces business rules (like negative values in limit or offset parameter)
+	// on the user domain.
 	GetUsers(
 		ctx context.Context,
-		limit *int,
-		offset *int,
+		page domain.Pagination,
 	) ([]domain.User, error)
 
 	GetUser(
@@ -40,6 +42,9 @@ type UsersService interface {
 		id int,
 	) error
 
+	// PatchUser at first requests to get the given user data by identificator,
+	// then enforces business rules on both the user patch and user domain levels
+	// (see ApplyPatch for details).
 	PatchUser(
 		ctx context.Context,
 		id int,
@@ -55,6 +60,17 @@ func NewUsersHTTPHandler(usersService UsersService) *UsersHTTPHandler {
 }
 
 // Routes returns a list of HTTP routes to be registered in the server router.
+//
+// Example with route-specific middleware:
+//
+//		{
+//		Method:     http.MethodGet,
+//		Path:       "/users",
+//		Handler:    h.GetUsers,
+//		Middleware: []middleware.Middleware{
+//			middleware.DebugLogger("get users middleware"),
+//		},
+//	}
 func (h *UsersHTTPHandler) Routes() []server.Route {
 	return []server.Route{
 		{

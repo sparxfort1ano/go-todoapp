@@ -51,30 +51,6 @@ func Logger(log *logger.Logger) Middleware {
 	}
 }
 
-// Panic recovers from unexpected panics during HTTP request handling.
-// It prevents the server from crashing and returns a graceful 500 response.
-// Represents the third level middleware.
-func Panic() Middleware {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := r.Context()
-			log := logger.FromContext(ctx)
-			responseHandler := httpresponse.NewHTTPResponseHandler(log, w)
-
-			defer func() {
-				if p := recover(); p != nil {
-					responseHandler.PanicResponse(
-						p,
-						"during handle HTTP request got unexpected panic",
-					)
-				}
-			}()
-
-			next.ServeHTTP(w, r)
-		})
-	}
-}
-
 // Trace logs the start and completion of an HTTP request handling.
 // It prevents the server from crashing and returns a graceful 500 response.
 // Represents the fourth level middleware.
@@ -96,9 +72,33 @@ func Trace() Middleware {
 
 			log.Debug(
 				"<<< done HTTP request",
-				zap.Int("status_code", rw.StatusCodeOrPanic()),
+				zap.Int("status_code", rw.StatusCode()),
 				zap.Duration("latency", time.Since(before)),
 			)
+		})
+	}
+}
+
+// Panic recovers from unexpected panics during HTTP request handling.
+// It prevents the server from crashing and returns a graceful 500 response.
+// Represents the third level middleware.
+func Panic() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			log := logger.FromContext(ctx)
+			responseHandler := httpresponse.NewHTTPResponseHandler(log, w)
+
+			defer func() {
+				if p := recover(); p != nil {
+					responseHandler.PanicResponse(
+						p,
+						"during handle HTTP request got unexpected panic",
+					)
+				}
+			}()
+
+			next.ServeHTTP(w, r)
 		})
 	}
 }

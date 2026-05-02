@@ -35,11 +35,11 @@ var phoneRegex = regexp.MustCompile(`^\+[0-9]+$`)
 // It returns error if the data contradicts the rules
 // such as length or symbols type of full_name and phone_number.
 func (u *User) Validate() error {
-	fullNameLength := utf8.RuneCountInString(u.FullName)
-	if fullNameLength < 3 || fullNameLength > 100 {
+	fullNameLen := utf8.RuneCountInString(u.FullName)
+	if fullNameLen < 3 || fullNameLen > 100 {
 		return fmt.Errorf(
 			"invalid `FullName` len: %d: %w",
-			fullNameLength,
+			fullNameLen,
 			errs.ErrInvalidArgument,
 		)
 	}
@@ -65,11 +65,26 @@ func (u *User) Validate() error {
 	return nil
 }
 
+// UserPatch represents the data used to partitially update an existing User.
+// Only the fields with Set=true are applied during the patch operation.
 type UserPatch struct {
 	FullName    Nullable[string]
 	PhoneNumber Nullable[string]
 }
 
+// NewUserPatch creates a new instance of UserPatch.
+func NewUserPatch(
+	fullName Nullable[string],
+	phoneNumber Nullable[string],
+) UserPatch {
+	return UserPatch{
+		FullName:    fullName,
+		PhoneNumber: phoneNumber,
+	}
+}
+
+// Validate checks whether the UserPatch data corresponds to
+// the required fields of User entity.
 func (p *UserPatch) Validate() error {
 	if p.FullName.Set && p.FullName.Value == nil {
 		return fmt.Errorf(
@@ -81,6 +96,8 @@ func (p *UserPatch) Validate() error {
 	return nil
 }
 
+// ApplyPatch modifies the User entity using the provided UserPatch data.
+// It validates both the patch data and the resulting user state before applying changes.
 func (u *User) ApplyPatch(patch UserPatch) error {
 	if err := patch.Validate(); err != nil {
 		return fmt.Errorf("validate user patch: %w", err)

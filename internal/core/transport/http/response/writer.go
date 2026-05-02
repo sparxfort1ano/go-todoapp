@@ -26,10 +26,10 @@ func (rw *ResponseWriter) WriteHeader(statusCode int) {
 	rw.statusCode = statusCode
 }
 
-// StatusCodeOrPanic retrieves the captured HTTP status code.
-// It panics if a response was sent without explicitly setting a status code.
-// Panic is allowed: the application based on RESTful API must response with appropriate status codes.
-func (rw *ResponseWriter) StatusCodeOrPanic() int {
+// StatusCode retrieves the captured HTTP status code.
+// It sets the 200 status code if a response was sent
+// without explicitly setting a status code.
+func (rw *ResponseWriter) StatusCode() int {
 	if rw.statusCode == StatusCodeUninitialized {
 		panic("no status code set")
 	}

@@ -10,7 +10,6 @@ type UserDTOResponse struct {
 	PhoneNumber *string `json:"phone_number"`
 }
 
-// dtoDTOFromDomain creates a new instance of UserDTOResponse with the given user domain.
 func userDTOFromDomain(user domain.User) UserDTOResponse {
 	return UserDTOResponse{
 		ID:          user.ID,
@@ -20,7 +19,6 @@ func userDTOFromDomain(user domain.User) UserDTOResponse {
 	}
 }
 
-// dtoDTOFromDomain creates a new slice of UserDTOResponse with the given user domain slice.
 func usersDTOFromDomains(users []domain.User) []UserDTOResponse {
 	usersDTO := make([]UserDTOResponse, len(users))
 

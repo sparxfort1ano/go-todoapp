@@ -10,8 +10,6 @@ type UserModel struct {
 	PhoneNumber *string
 }
 
-// userDomainsFromModels creates a new slice of domain.User
-// with the given user model slice.
 func userDomainsFromModels(users []UserModel) []domain.User {
 	userDomains := make([]domain.User, len(users))
 

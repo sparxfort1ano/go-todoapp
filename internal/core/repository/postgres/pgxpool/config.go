@@ -1,4 +1,4 @@
-package postgres
+package pgxpool
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 // config holds the environment-based settings required to connect
-// to the PostgreSQL database and define operation timeouts.
+// to the PostgreSQL database via pgx and define operation timeouts.
 type config struct {
 	Host     string        `envconfig:"HOST" required:"true"`
 	Port     string        `envconfig:"PORT" default:"5432"`
@@ -19,7 +19,7 @@ type config struct {
 }
 
 // newConfig parses the system environment variables with the "POSTGRES_" prefix
-// into the config struct. It returns an error if required variables are missing or malformed.
+// into the config struct. It returns an error if required variables are missed or malformed.
 func newConfig() (config, error) {
 	var cfg config
 

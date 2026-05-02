@@ -7,15 +7,15 @@ import (
 )
 
 // config holds the environment-based settings required to configure
-// the Zap logger, specifically the minimum log level 
+// the Zap logger, specifically the minimum log level
 // and the output directory for log files.
 type config struct {
-	Level  string `envconfig:"LEVEL"  required:"true"`
+	Level  string `envconfig:"LEVEL"  default:"DEBUG"`
 	Folder string `envconfig:"FOLDER" required:"true"`
 }
 
 // newConfig parses the system environment variables with the "LOGGER_" prefix.
-// into the config struct. It returns an error if required variables are missing or malformed.
+// into the config struct. It returns an error if required variables are missed or malformed.
 func newConfig() (config, error) {
 	var cfg config
 

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
+	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/request"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/response"
-	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/utils"
 )
 
 // GetUserResponse represents the outgoing JSON body after a user is gotten (JSON).
@@ -18,9 +18,7 @@ func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	log := logger.FromContext(ctx)
 	responseHandler := response.NewHTTPResponseHandler(log, w)
 
-	log.Debug("invoke GetUser handler")
-
-	userID, err := utils.GetIntPathValue(r, "id")
+	userID, err := request.GetIntPathValue(r, "id")
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,

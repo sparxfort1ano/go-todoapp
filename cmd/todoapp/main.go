@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
-	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
+	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres/pgxpool"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/middleware"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/server"
 	userPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/users/repository/postgres"
@@ -29,9 +29,9 @@ func main() {
 	defer logger.Close()
 
 	logger.Debug("initializing postgres conection pool")
-	pool, err := postgres.NewConnectionPool(
+	pool, err := pgxpool.NewPool(
 		ctx,
-		postgres.NewConfigMust(),
+		pgxpool.NewConfigMust(),
 	)
 	if err != nil {
 		logger.Fatal("failed to initialize postgres connection pool", zap.Error(err))
@@ -49,12 +49,16 @@ func main() {
 		logger,
 		middleware.RequestID(),
 		middleware.Logger(logger),
-		middleware.Panic(),
 		middleware.Trace(),
+		middleware.Panic(),
 	)
-	apiVersionRouter := server.NewAPIVersionRouter(server.APIVersion1)
-	apiVersionRouter.RegisterRoutes(usersHTTPHandler.Routes()...)
-	httpServer.RegisterAPIRouters(apiVersionRouter)
+	apiVersionRouterV1 := server.NewAPIVersionRouter(server.APIVersion1)
+	apiVersionRouterV1.RegisterRoutes(usersHTTPHandler.Routes()...)
+
+	httpServer.RegisterAPIRouters(
+		apiVersionRouterV1,
+		// apiVersionRouterV2,
+	)
 
 	if err := httpServer.Run(ctx); err != nil {
 		logger.Error("HTTP server run error")

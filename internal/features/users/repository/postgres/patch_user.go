@@ -6,9 +6,9 @@ import (
 
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	errs "github.com/sparxfort1ano/go-todoapp/internal/core/errors"
+	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
 )
 
 func (r *UsersRepository) PatchUser(
@@ -50,9 +50,9 @@ func (r *UsersRepository) PatchUser(
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, postgres.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
-				"user with id='%d' concurrently acessed: %w",
+				"user with id='%d' concurrently accessed: %w",
 				id,
 				errs.ErrConflict)
 		}

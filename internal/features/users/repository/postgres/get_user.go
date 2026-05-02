@@ -5,14 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	errs "github.com/sparxfort1ano/go-todoapp/internal/core/errors"
+	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
 )
 
-// GetUser executes the SQL query to read the given row
-// according to the user identificator.
-// It maps the resulting database row back into a domain enitity.
 func (r *UsersRepository) GetUser(
 	ctx context.Context,
 	id int,
@@ -36,7 +33,7 @@ func (r *UsersRepository) GetUser(
 		&userModel.PhoneNumber,
 	)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, postgres.ErrNoRows) {
 			return domain.User{}, fmt.Errorf(
 				"user with id=`%d`: %w",
 				id,

@@ -5,7 +5,7 @@ package postgres
 import "github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
 
 // UsersRepository provides data access methods for user entities.
-// All of its User methods applies a configured operation timeout.
+// All of its User methods apply a configured operation timeout.
 type UsersRepository struct {
 	pool postgres.Pool
 }

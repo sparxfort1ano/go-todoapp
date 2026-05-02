@@ -1,5 +1,5 @@
 // Package request provides utilities for parsing incoming HTTP requests.
-// It handles JSON decoding and structural validation of incoming payloads.
+// It handles JSON decoding and structural or functional validation of incoming payloads.
 package request
 
 import (
@@ -18,7 +18,8 @@ type validatable interface {
 }
 
 // DecodeAndValidateRequest decodes the JSON body of an HTTP request into the provided
-// destination struct and validates its fields based on struct tags.
+// destination struct and validates its fields based on struct tags
+// or the available for the dest type Validate method.
 // It returns an ErrInvallidArgument if decoding or validation fails.
 func DecodeAndValidateRequest(r *http.Request, dest any) error {
 	if err := json.NewDecoder(r.Body).Decode(dest); err != nil {

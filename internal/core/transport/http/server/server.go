@@ -33,23 +33,24 @@ func NewHTTPServer(cfg config, log *logger.Logger, middleware ...middleware.Midd
 }
 
 // RegisterAPIRouters mounts version-specific sub-routers (e.g. v1, v2) onto the main HTTP server.
-func (h *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
+// It automatically wraps each router with the version's specific middleware.
+func (s *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
 	for _, router := range routers {
 		prefix := "/api/" + string(router.apiVersion)
 
-		h.mux.Handle(
+		s.mux.Handle(
 			prefix+"/",
-			http.StripPrefix(prefix, router),
+			http.StripPrefix(prefix, router.withMiddleware()),
 		)
 	}
 }
 
 // Run starts the HTTP server, supporting its graceful shutdown.
-func (h *HTTPServer) Run(ctx context.Context) error {
-	mux := middleware.ChainMiddleware(h.mux, h.middleware...)
+func (s *HTTPServer) Run(ctx context.Context) error {
+	mux := middleware.ChainMiddleware(s.mux, s.middleware...)
 
 	server := &http.Server{
-		Addr:    h.cfg.Addr,
+		Addr:    s.cfg.Addr,
 		Handler: mux,
 	}
 
@@ -58,7 +59,7 @@ func (h *HTTPServer) Run(ctx context.Context) error {
 	go func() {
 		defer close(ch)
 
-		h.log.Warn("start HTTP server", zap.String("addr", h.cfg.Addr))
+		s.log.Warn("start HTTP server", zap.String("addr", s.cfg.Addr))
 
 		err := server.ListenAndServe()
 		if !errors.Is(err, http.ErrServerClosed) {
@@ -72,11 +73,11 @@ func (h *HTTPServer) Run(ctx context.Context) error {
 			return fmt.Errorf("listen and serve HTTP: %w", err)
 		}
 	case <-ctx.Done():
-		h.log.Warn("shutdown HTTP server...")
+		s.log.Warn("shutdown HTTP server...")
 
 		shutdownCtx, cancel := context.WithTimeout(
 			context.Background(),
-			h.cfg.ShutdownTimeout,
+			s.cfg.ShutdownTimeout,
 		)
 		defer cancel()
 
@@ -86,7 +87,7 @@ func (h *HTTPServer) Run(ctx context.Context) error {
 			return fmt.Errorf("shutdown HTTP server: %w", err)
 		}
 
-		h.log.Warn("HTTP server stopped")
+		s.log.Warn("HTTP server stopped")
 	}
 
 	return nil

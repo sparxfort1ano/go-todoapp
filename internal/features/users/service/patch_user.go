@@ -7,8 +7,6 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 )
 
-// gets user by id apply patch to user save patched user in repo
-
 func (s *UsersService) PatchUser(
 	ctx context.Context,
 	id int,

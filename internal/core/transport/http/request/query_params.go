@@ -1,6 +1,4 @@
-// Package utils provides helper functions for parsing and
-// validating HTTP request data.
-package utils
+package request
 
 import (
 	"fmt"

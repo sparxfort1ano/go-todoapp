@@ -11,11 +11,11 @@ import (
 // server, specifically the server path and timeout for the graceful shutdown.
 type config struct {
 	Addr            string        `envconfig:"ADDR" required:"true"`
-	ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" required:"true"`
+	ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" default:"30s"`
 }
 
 // newConfig parses the system environment variables with the "HTTP_" prefix
-// into the config struct. It returns an error if required variables are missing or malformed.
+// into the config struct. It returns an error if required variables are missed or malformed.
 func newConfig() (config, error) {
 	var cfg config
 

@@ -7,13 +7,9 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 )
 
-// GetUsers executes the SQL query to read the given rows
-// according to the limit and offset filter.
-// It maps the resulting database row back into a domain enitity.
 func (r *UsersRepository) GetUsers(
 	ctx context.Context,
-	limit *int,
-	offset *int,
+	page domain.Pagination,
 ) ([]domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
@@ -29,8 +25,8 @@ func (r *UsersRepository) GetUsers(
 	rows, err := r.pool.Query(
 		ctx,
 		query,
-		limit,
-		offset,
+		page.Limit,
+		page.Offset,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("select users: %w", err)

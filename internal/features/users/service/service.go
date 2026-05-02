@@ -9,7 +9,8 @@ import (
 )
 
 // UsersService encapsulates the core business logic for user management.
-// All of its User methods delegate the persistence logic to the repository layer.
+// All of its methods delegate the persistence logic to the repository layer and
+// apply a configured operation timeout.
 type UsersService struct {
 	usersRepository UsersRepository
 }
@@ -17,27 +18,41 @@ type UsersService struct {
 // UsersRepository defines the contract that decouples the service layer
 // from the underlying repository logic.
 type UsersRepository interface {
+	// CreateUser executes the SQL query to insert a new user into the database.
+	// It maps the resulting database row back into a domain entity.
 	CreateUser(
 		ctx context.Context,
 		user domain.User,
 	) (domain.User, error)
 
+	// GetUsers executes the SQL query to read the given rows
+	// according to the limit and offset filter.
+	// It maps the resulting database row back into a domain entity.
 	GetUsers(
 		ctx context.Context,
-		limit *int,
-		offset *int,
+		page domain.Pagination,
 	) ([]domain.User, error)
 
+	// GetUser executes the SQL query to read the given row
+	// according to the user identificator.
+	// It maps the resulting database row back into a domain entity.
 	GetUser(
 		ctx context.Context,
 		id int,
 	) (domain.User, error)
 
+	// DeleteUser executes the SQL query to delete the given row
+	// according to the user identificator.
 	DeleteUser(
 		ctx context.Context,
 		id int,
 	) error
 
+	// PatchUser executes the SQL query to patch the given row
+	// according to the user identificator.
+	// It uses Optimistic Concurrency Control by checking the user's Version
+	// to prevent lost updates.
+	// It maps the resulting database row back into a domain entity.
 	PatchUser(
 		ctx context.Context,
 		id int,
