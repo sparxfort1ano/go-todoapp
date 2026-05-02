@@ -57,7 +57,6 @@ func main() {
 
 	httpServer.RegisterAPIRouters(
 		apiVersionRouterV1,
-		// apiVersionRouterV2,
 	)
 
 	if err := httpServer.Run(ctx); err != nil {
