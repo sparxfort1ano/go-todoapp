@@ -7,9 +7,9 @@ var (
 	UninializedVersion = -1
 )
 
-// NewUserUninialized creates a new User entity before it is persisted to storage.
+// NewUserUninitialized creates a new User entity before it is persisted to storage.
 // The ID and Version are set to placeholder values until the database assigns them.
-func NewUserUninialized(fullName string, phoneNumber *string) User {
+func NewUserUninitialized(fullName string, phoneNumber *string) User {
 	return NewUser(
 		UninializedID,
 		UninializedVersion,
