@@ -18,13 +18,16 @@ type TasksHTTPHandler struct {
 
 // TasksService defines the contract that decouples the HTTP transport layer
 // from the underlying domain logic.
-// TODO methods commentaries
 type TasksService interface {
+	// CreateTask enforces business rules (like length
+	// and semantically bad values) on the task domain.
 	CreateTask(
 		ctx context.Context,
 		task domain.Task,
 	) (domain.Task, error)
 
+	// GetTasks enforces business rules (like negative values in a limit
+	// or offset parameter) on the task domain.
 	GetTasks(
 		ctx context.Context,
 		userID *int,
@@ -41,6 +44,9 @@ type TasksService interface {
 		id int,
 	) error
 
+	// PatchTask at first requests to get the given task data by the task identificator,
+	// then enforces business rules on both the task patch and task domain levels
+	// (see ApplyPatch for details).
 	PatchTask(
 		ctx context.Context,
 		id int,

@@ -26,7 +26,6 @@ func (r *TasksRepository) GetTask(
 	row := r.pool.QueryRow(ctx, query, id)
 
 	var taskModel TaskModel
-
 	if err := row.Scan(
 		&taskModel.ID,
 		&taskModel.Version,
@@ -47,16 +46,6 @@ func (r *TasksRepository) GetTask(
 		return domain.Task{}, fmt.Errorf("scan error: %w", err)
 	}
 
-	taskDomain := domain.NewTask(
-		taskModel.ID,
-		taskModel.Version,
-		taskModel.Title,
-		taskModel.Description,
-		taskModel.Completed,
-		taskModel.CreatedAt,
-		taskModel.CompletedAt,
-		taskModel.AuthorUserID,
-	)
-
+	taskDomain := taskDomainFromModel(taskModel)
 	return taskDomain, nil
 }

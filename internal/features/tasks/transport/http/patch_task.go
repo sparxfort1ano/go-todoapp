@@ -25,12 +25,12 @@ type PatchTaskRequest struct {
 func (r *PatchTaskRequest) Validate() error {
 	if r.Title.Set {
 		if r.Title.Value == nil {
-			return fmt.Errorf("`Title can't be NULL")
+			return fmt.Errorf("'Title' can't be NULL")
 		}
 
 		titleLen := utf8.RuneCountInString(*r.Title.Value)
 		if titleLen < 1 || titleLen > 100 {
-			return fmt.Errorf("`Title` must be between 1 and 100 symbols")
+			return fmt.Errorf("'Title' must be between 1 and 100 symbols")
 		}
 	}
 
@@ -38,14 +38,14 @@ func (r *PatchTaskRequest) Validate() error {
 		if r.Description.Value != nil {
 			descriptionLen := utf8.RuneCountInString(*r.Description.Value)
 			if descriptionLen < 1 || descriptionLen > 1000 {
-				return fmt.Errorf("`Description` must be between 1 and 1000 symbols")
+				return fmt.Errorf("'Description' must be between 1 and 1000 symbols")
 			}
 		}
 	}
 
 	if r.Completed.Set {
 		if r.Completed.Value == nil {
-			return fmt.Errorf("`Completed` can't be NULL")
+			return fmt.Errorf("'Completed' can't be NULL")
 		}
 	}
 

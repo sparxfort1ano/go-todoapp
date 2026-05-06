@@ -14,6 +14,9 @@ import (
 // GetTasksResponse represents the outgoing JSON body after getting a tasks slice (JSON).
 type GetTasksResponse []TaskDTOResponse
 
+// GetTasks processes the HTTP request to get a list of tasks
+// according to the limit, offset and user identificator parameters.
+// It writes the JSON response.
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)
@@ -49,7 +52,7 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 	userID, errUserID := request.GetIntQueryParam(r, queryUserID)
 	if errUserID != nil {
 		errUserID = fmt.Errorf(
-			"get `%s` query params: %w",
+			"get '%s' query params: %w",
 			queryUserID,
 			errUserID,
 		)
@@ -58,7 +61,7 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 	limit, errLimit := request.GetIntQueryParam(r, queryLimit)
 	if errLimit != nil {
 		errLimit = fmt.Errorf(
-			"get `%s` query params: %w",
+			"get '%s' query params: %w",
 			queryLimit,
 			errLimit,
 		)
@@ -67,7 +70,7 @@ func getUserIDLimitOffsetQueryParams(r *http.Request) (*int, *int, *int, error) 
 	offset, errOffset := request.GetIntQueryParam(r, queryOffset)
 	if errOffset != nil {
 		errOffset = fmt.Errorf(
-			"get `%s` query params: %w",
+			"get '%s' query params: %w",
 			queryOffset,
 			errOffset,
 		)

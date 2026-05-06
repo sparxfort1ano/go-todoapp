@@ -52,7 +52,6 @@ func (r *TasksRepository) PatchTask(
 	)
 
 	var taskModel TaskModel
-
 	if err := row.Scan(
 		&taskModel.ID,
 		&taskModel.Version,

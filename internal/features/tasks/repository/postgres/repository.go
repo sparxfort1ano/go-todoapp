@@ -6,8 +6,8 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
 )
 
-// TasksRepository provides data access methods for user entities.
-// All of its User methods apply a configured operation timeout.
+// TasksRepository provides data access methods for task /entities.
+// All of its Task methods apply a configured operation timeout.
 type TasksRepository struct {
 	pool postgres.Pool
 }
