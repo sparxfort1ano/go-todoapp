@@ -44,5 +44,5 @@ func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func domainFromDTO(dto CreateUserRequest) domain.User {
-	return domain.NewUserUninialized(dto.FullName, dto.PhoneNumber)
+	return domain.NewUserUninitialized(dto.FullName, dto.PhoneNumber)
 }

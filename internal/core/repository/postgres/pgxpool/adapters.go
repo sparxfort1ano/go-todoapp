@@ -2,6 +2,7 @@ package pgxpool
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -19,16 +20,12 @@ type pgxRow struct {
 }
 
 // Scan delegates to the underlying pgx.Row's Scan method,
-// translating the driver-specific pgx.ErrNoRows into the
-// domain-agnostic postgres.ErrNoRows.
+// translating the driver-specific pgx errors into the
+// domain-agnostic errors (see errors.go for more details).
 func (r pgxRow) Scan(dest ...any) error {
 	err := r.Row.Scan(dest...)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return postgres.ErrNoRows
-		}
-
-		return err
+		return mapErrors(err)
 	}
 
 	return nil
@@ -37,4 +34,34 @@ func (r pgxRow) Scan(dest ...any) error {
 // pgxCommandTag wraps the standard pgx.CommandTag to implement the postgres.CommandTag interface.
 type pgxCommandTag struct {
 	pgconn.CommandTag
+}
+
+func mapErrors(err error) error {
+	const (
+		pgxViolatesForeignKeyError = "23503"
+	)
+
+	var (
+		pgErr *pgconn.PgError
+	)
+
+	switch {
+	case errors.Is(err, pgx.ErrNoRows):
+		return postgres.ErrNoRows
+	case errors.As(err, &pgErr):
+		if pgErr.Code == pgxViolatesForeignKeyError {
+			return fmt.Errorf(
+				"%v: %w",
+				err,
+				postgres.ErrViolatesForeignKey,
+			)
+		}
+	}
+
+	return fmt.Errorf(
+		"%v: %w",
+		err,
+		postgres.ErrUnknown,
+	)
+
 }
