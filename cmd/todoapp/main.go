@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sparxfort1ano/go-todoapp/internal/core/config"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres/pgxpool"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/middleware"
@@ -21,12 +22,9 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	timeZone = time.UTC
-)
-
 func main() {
-	time.Local = timeZone
+	cfg := config.NewConfigMust()
+	time.Local = cfg.TimeZone
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
@@ -38,7 +36,7 @@ func main() {
 	}
 	defer logger.Close()
 
-	logger.Debug("application time zone", zap.Any("zone", timeZone))
+	logger.Debug("application time zone", zap.Any("zone", time.Local))
 
 	logger.Debug("initializing postgres conection pool")
 	pool, err := pgxpool.NewPool(
