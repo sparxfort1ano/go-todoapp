@@ -47,6 +47,16 @@ func NewTask(
 	}
 }
 
+// CompletionDuration calculates the time taken to complete the task.
+func (t *Task) CompletionDuration() *time.Duration {
+	if !t.Completed || t.CompletedAt == nil {
+		return nil
+	}
+
+	duration := t.CompletedAt.Sub(t.CreatedAt)
+	return &duration
+}
+
 // Validate checks whether the business rules for the Task entity are met.
 // It returns error if the data contradicts the rules
 // such as unappropriate length or bad logic

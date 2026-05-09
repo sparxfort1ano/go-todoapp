@@ -13,6 +13,11 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres/pgxpool"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/middleware"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/server"
+	statsPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/repository/postgres"
+	statsService "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/service"
+
+	statsHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/transport/http"
+
 	tasksPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/repository/postgres"
 	tasksService "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/service"
 	tasksHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/transport/http"
@@ -58,6 +63,11 @@ func main() {
 	tasksService := tasksService.NewTaskService(tasksRepository)
 	tasksHTTPHandler := tasksHTTP.NewTaskHTTPHandler(tasksService)
 
+	logger.Debug("initializing feature", zap.String("feature", "statistics"))
+	statisticsRepository := statsPostgres.NewStatisticsRepository(pool)
+	statisticsService := statsService.NewStatisticsService(statisticsRepository)
+	statisticsHTTPHandler := statsHTTP.NewStatisticsHTTPHandler(statisticsService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := server.NewHTTPServer(
 		server.NewConfigMust(),
@@ -70,6 +80,7 @@ func main() {
 	apiVersionRouterV1 := server.NewAPIVersionRouter(server.APIVersion1)
 	apiVersionRouterV1.RegisterRoutes(usersHTTPHandler.Routes()...)
 	apiVersionRouterV1.RegisterRoutes(tasksHTTPHandler.Routes()...)
+	apiVersionRouterV1.RegisterRoutes(statisticsHTTPHandler.Routes()...)
 
 	httpServer.RegisterAPIRouters(
 		apiVersionRouterV1,
