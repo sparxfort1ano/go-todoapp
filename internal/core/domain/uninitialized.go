@@ -1,4 +1,4 @@
-// Package domain provides the core business models (e.g. domain, nullable, pagination).
+// Package domain provides the core business models (e.g. domain, nullable, pagination, statistics).
 // It sits at the center of architecture and has no dependencies on other layers.
 package domain
 
