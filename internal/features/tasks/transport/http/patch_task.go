@@ -14,9 +14,9 @@ import (
 
 // PatchTaskRequest represents the incoming JSON body for a partial task update (DTO).
 type PatchTaskRequest struct {
-	Title       types.Nullable[string] `json:"title"`
-	Description types.Nullable[string] `json:"description"`
-	Completed   types.Nullable[bool]   `json:"completed"`
+	Title       types.Nullable[string] `json:"title" swaggertype:"string" example:"Погулять с собакой"`
+	Description types.Nullable[string] `json:"description" swaggertype:"string" example:"null"`
+	Completed   types.Nullable[bool]   `json:"completed" swaggertype:"boolean"`
 }
 
 // Validate performs early HTTP-level validation on the incoming payload.
@@ -57,6 +57,25 @@ type PatchTaskResponse TaskDTOResponse
 
 // PatchTask processes the HTTP request to partially update an existing task
 // with the given id, validating the incoming JSON body.
+//
+// @Summary		Обновить задачу
+// @Description Обновляет информацию об уже существующей в системе задаче.
+// @Description ### Логика обновления полей (Three-state logic):
+// @Description 1. **Поле не передано**: `description` игнорируется, значение в БД не меняется.
+// @Description 2. **Явно передано значение**: `"description": "Утром в 6:30 выйти на прогулку с Бобиком"` - устанавливает новое описание для задачи.
+// @Description 3. **Передан null**: `"description": null` - очищает поле в БД (set to NULL).
+// @Description Ограничения: `title` и `completed` не могут быть выставлены как null.
+// @Tags 		tasks
+// @Accept 		json
+// @Produce 	json
+// @Param 		id 		path int 			  true  "ID изменяемой задачи"
+// @Param		request body PatchTaskRequest true 	"PatchTask тело запроса"
+// @Success 	200 {object} PatchTaskResponse 		"Успешно измененная задача"
+// @Failure 	400 {object} response.ErrorResponse "Bad request"
+// @Failure 	404 {object} response.ErrorResponse "Task not found"
+// @Failure		409 {object} response.ErrorResponse "Conflict"
+// @Failure 	500 {object} response.ErrorResponse "Internal server error"
+// @Router 		/tasks/{id}	 [patch]
 func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)

@@ -11,8 +11,8 @@ import (
 
 // CreateUserRequest represents the incoming JSON body for creating a user (DTO).
 type CreateUserRequest struct {
-	FullName    string  `json:"full_name" validate:"required,min=3,max=100"`
-	PhoneNumber *string `json:"phone_number"  validate:"omitempty,e164,min=10"`
+	FullName    string  `json:"full_name" validate:"required,min=3,max=100" example:"Ivan Ivanov"`
+	PhoneNumber *string `json:"phone_number" validate:"omitempty,e164,min=10" example:"+79051707732"`
 }
 
 // CreateUserResponse represents the outgoing JSON body after a user is created (JSON).
@@ -20,6 +20,17 @@ type CreateUserResponse UserDTOResponse
 
 // CreateUser processes the HTTP request to register a new user.
 // It decodes the payload and writes the JSON response.
+//
+// @Summary		Создать пользователя
+// @Description Создать нового пользователя в системе.
+// @Tags 		users
+// @Accept 		json
+// @Produce 	json
+// @Param 		request 	body 		CreateUserRequest true 	"CreateUser тело запроса"
+// @Success 	201 		{object} 	CreateUserResponse 		"Успешно созданный пользователь"
+// @Failure 	400 		{object} 	response.ErrorResponse 	"Bad request"
+// @Failure 	500 		{object} 	response.ErrorResponse 	"Internal server error"
+// @Router 		/users 		[post]
 func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)

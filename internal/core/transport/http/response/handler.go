@@ -28,12 +28,14 @@ func NewHTTPResponseHandler(log *logger.Logger, rw http.ResponseWriter) *HTTPRes
 	}
 }
 
-// JSONResponse serializes the response body to JSON, sets the HTTP status code
+// JSONResponse serializes the response body to JSON, sets the HTTP status code and content-type
 // and logs an error if the encoding process fails.
 func (h *HTTPResponseHandler) JSONResponse(
 	responseBody any,
 	statusCode int,
 ) {
+	h.rw.Header().Set("Content-Type", "application/json")
+
 	h.rw.WriteHeader(statusCode)
 
 	if err := json.NewEncoder(h.rw).Encode(responseBody); err != nil {
@@ -52,10 +54,11 @@ func (h *HTTPResponseHandler) errorResponse(
 	err error,
 	msg string,
 ) {
-	response := map[string]string{
-		"message": msg,
-		"error":   err.Error(),
+	response := ErrorResponse{
+		Error:   err.Error(),
+		Message: msg,
 	}
+
 	h.JSONResponse(
 		response,
 		statusCode,

@@ -17,6 +17,18 @@ type GetTasksResponse []TaskDTOResponse
 // GetTasks processes the HTTP request to get a list of tasks
 // according to the limit, offset and user identificator parameters.
 // It writes the JSON response.
+//
+// @Summary		Список задач
+// @Description Просмотр списка задач с опциональной пагинацией и/или фильтрацией по ID автора задачи.
+// @Tags 		tasks
+// @Produce 	json
+// @Param 		user_id query 	int false 				"Фильтрация задач по ID автора"
+// @Param 		limit 	query 	int false 				"Размер страницы с задачами"
+// @Param 		offset 	query 	int false 				"Смещение страницы с задачами"
+// @Success 	200 	{object} GetTasksResponse 		"Успешное получение списка задач"
+// @Failure 	400 	{object} response.ErrorResponse "Bad request"
+// @Failure 	500 	{object} response.ErrorResponse "Internal server error"
+// @Router 		/tasks 	[get]
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)

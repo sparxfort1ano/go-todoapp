@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,11 +11,38 @@ import (
 	"go.uber.org/zap"
 )
 
+// CORS adds necessary headers to allow cross-origin requests from
+// trusted domains.
+func CORS() Middleware {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			allowedOrigins := map[string]struct{}{
+				"http://localhost:5050": {},
+				"http://127.0.0.1:5050": {},
+			}
+
+			origin := r.Header.Get("Origin")
+
+			if _, ok := allowedOrigins[origin]; ok {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
+			}
+
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 const requestIDHeader = "X-Request-ID"
 
 // RequestID ensures every request has a unique identifier.
 // It reads the X-Request-ID head from the client or generates a new UUID.
-// Represents the first level middleware.
 func RequestID() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +61,6 @@ func RequestID() Middleware {
 
 // Logger injects a context-aware zap.Logger into the request context.
 // It binds the request_id and URL to the logger for consistent structured logging.
-// Represents the second level middleware.
 func Logger(log *logger.Logger) Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -53,10 +80,20 @@ func Logger(log *logger.Logger) Middleware {
 
 // Trace logs the start and completion of an HTTP request handling.
 // It prevents the server from crashing and returns a graceful 500 response.
-// Represents the fourth level middleware.
 func Trace() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// EXCLUSION: bypass Swagger routes without wrapping the ResponseWriter.
+			// Swagger uses http.FileServer to serve large static UI files (JS/CSS).
+			// FileServer relies on hidden interfaces like http.Flusher and io.ReaderFrom
+			// for chunked transfer encoding. Our custom ResponseWriter wrapper hides
+			// these interfaces, which would break the file streaming.
+			// Furthermore, tracing static infrastructure files creates unnecessary log noise.
+			if strings.HasPrefix(r.URL.Path, "/swagger/") {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			ctx := r.Context()
 			log := logger.FromContext(ctx)
 			rw := httpresponse.NewResponseWriter(w)
@@ -81,7 +118,6 @@ func Trace() Middleware {
 
 // Panic recovers from unexpected panics during HTTP request handling.
 // It prevents the server from crashing and returns a graceful 500 response.
-// Represents the third level middleware.
 func Panic() Middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
