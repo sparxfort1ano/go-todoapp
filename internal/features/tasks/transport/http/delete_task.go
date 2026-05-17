@@ -10,6 +10,16 @@ import (
 
 // DeleteTask processes the HTTP request to delete all the data
 // about the task with the given identificator.
+//
+// @Summary		Удаление задачи
+// @Description Удалить существующую в системе задачу по ее ID.
+// @Tags 		tasks
+// @Param 		id 			path int true 					"ID удаляемой задачи"
+// @Success 	204 										"Успешное удаление задачи"
+// @Failure 	400 		{object} response.ErrorResponse "Bad request"
+// @Failure 	404 		{object} response.ErrorResponse "Task not found"
+// @Failure 	500 		{object} response.ErrorResponse "Internal server error"
+// @Router 		/tasks/{id} [delete]
 func (h *TasksHTTPHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)

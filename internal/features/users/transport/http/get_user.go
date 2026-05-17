@@ -13,6 +13,17 @@ type GetUserResponse UserDTOResponse
 
 // GetUser processes the HTTP request to get a user with the given id.
 // It writes the JSON response.
+//
+// @Summary		Получение пользователя
+// @Description Получение конкретного пользователя по его ID.
+// @Tags 		users
+// @Produce 	json
+// @Param 		id 	path int true 					"ID удаляемого пользователя"
+// @Success 	200 {object} GetUserResponse 		"Успешное получение пользователя"
+// @Failure 	400 {object} response.ErrorResponse "Bad request"
+// @Failure 	404 {object} response.ErrorResponse "User not found"
+// @Failure 	500 {object} response.ErrorResponse "Internal server error"
+// @Router 		/users/{id}  [get]
 func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)

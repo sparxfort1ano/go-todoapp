@@ -14,15 +14,27 @@ import (
 
 // GetStatisticsResponse represents the outgoing JSON body after getting the statistics (JSON).
 type GetStatisticsResponse struct {
-	TasksCreated               int      `json:"tasks_created"`
-	TasksCompleted             int      `json:"tasks_completed"`
-	TasksCompletedRate         *float64 `json:"tasks_completed_rate"`
-	TasksAverageCompletionTime *string  `json:"task_average_completion_time"`
+	TasksCreated               int      `json:"tasks_created" example:"50"`
+	TasksCompleted             int      `json:"tasks_completed" example:"10"`
+	TasksCompletedRate         *float64 `json:"tasks_completed_rate" example:"20"`
+	TasksAverageCompletionTime *string  `json:"task_average_completion_time" example:"1m30s"`
 }
 
 // GetStatistics processes the HTTP request to get task statistics
 // according to the from and to parameters and user identificator.
 // It delegates the logic to the service layer and writes the JSON response.
+//
+// @Summary 	Получение статистики
+// @Description Получение статистики по задачам с опциональной фильтрацией по user_id и/или временному промежутку.
+// @Tags 		statistics
+// @Produce 	json
+// @Param 		user_id query 	int    	false 			"Фильтрация статистики по конкретному пользователю"
+// @Param 		from 	query 	string 	false 			"Начало промежутка рассмотрения статистики (включительно), формат: YYYY-MM-DD"
+// @Param 		to 		query 	string 	false 			"Конец промежутка рассмотрения статистики (невключительно), формат: YYYY-MM-DD"
+// @Success 	200 	{object} GetStatisticsResponse 	"Успешное получение статистики"
+// @Failure 	400 	{object} response.ErrorResponse "Bad request"
+// @Failure		500 	{object} response.ErrorResponse "Internal server error"
+// @Router		/statistics [get]
 func (h *StatisticsHTTPHandler) GetStatistics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)

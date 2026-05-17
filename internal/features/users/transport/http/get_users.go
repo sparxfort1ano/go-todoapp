@@ -16,6 +16,17 @@ type GetUsersResponse []UserDTOResponse
 
 // GetUsers processes the HTTP request to get a list of users according to the limit and offset parameters.
 // It writes the JSON response.
+//
+// @Summary		Список пользователей
+// @Description Просмотр списка пользователей с опциональной пагинацией.
+// @Tags 		users
+// @Produce 	json
+// @Param 		limit 	query 	int false 				"Размер страницы с пользователями"
+// @Param 		offset 	query 	int false 				"Смещение страницы с пользователями"
+// @Success 	200 	{object} GetUsersResponse 		"Успешное получение списка пользователей"
+// @Failure 	400 	{object} response.ErrorResponse "Bad request"
+// @Failure 	500 	{object} response.ErrorResponse "Internal server error"
+// @Router 		/users 	[get]
 func (h *UsersHTTPHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := logger.FromContext(ctx)
