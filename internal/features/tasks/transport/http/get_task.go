@@ -18,7 +18,7 @@ type GetTaskResponse TaskDTOResponse
 // @Description Получение конкретной задачи по ее ID.
 // @Tags 		tasks
 // @Produce 	json
-// @Param 		id 	path int true 					"ID удаляемого задачи"
+// @Param 		id 	path 	 int true 				"ID удаляемой задачи"
 // @Success 	200 {object} GetTaskResponse 		"Успешное получение задачи"
 // @Failure 	400 {object} response.ErrorResponse "Bad request"
 // @Failure 	404 {object} response.ErrorResponse "Task not found"

@@ -185,7 +185,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID удаляемого задачи",
+                        "description": "ID удаляемой задачи",
                         "name": "id",
                         "in": "path",
                         "required": true

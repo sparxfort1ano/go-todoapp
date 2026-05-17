@@ -389,7 +389,7 @@ paths:
     get:
       description: Получение конкретной задачи по ее ID.
       parameters:
-      - description: ID удаляемого задачи
+      - description: ID удаляемой задачи
         in: path
         name: id
         required: true
