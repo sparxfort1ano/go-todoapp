@@ -12,6 +12,7 @@ import (
 type config struct {
 	Addr            string        `envconfig:"ADDR" required:"true"`
 	ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" default:"30s"`
+	AllowedOrigins  []string      `envconfig:"ALLOWED_ORIGINS" required:"true"`
 }
 
 // newConfig parses the system environment variables with the "HTTP_" prefix
