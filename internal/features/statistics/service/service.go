@@ -9,11 +9,13 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 )
 
-// StatisticsService encapsulates the core business logic for task management.
+// StatisticsService encapsulates the core business logic for statistics management.
 type StatisticsService struct {
 	statisticsRepository StatisticsRepository
 }
 
+// StatisticsRepository defines the contract that decouples the service layer
+// from the underlying repository logic.
 type StatisticsRepository interface {
 	// GetTasks executes the SQL query to read the given rows
 	// according to the from, to (both define the time range for creating tasks)
