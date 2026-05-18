@@ -47,6 +47,16 @@ func (s *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
 	}
 }
 
+// RegisterRoutes mounts individual, top-level HTTP routes onto the main server multiplexer.
+// It automatically wraps each handler with the route's specific middleware.
+func (s *HTTPServer) RegisterRoutes(routes ...Route) {
+	for _, route := range routes {
+		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
+
+		s.mux.Handle(pattern, route.withMiddleware())
+	}
+}
+
 // RegisterSwagger initializes and mounts the Swagger UI documentation.
 // It sets up the handlers for serving the interactive web interface at /swagger/
 // and directly serves the generated OpenAPI JSON specification.

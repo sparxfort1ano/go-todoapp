@@ -47,6 +47,18 @@ func (h *HTTPResponseHandler) NoContentResponse() {
 	h.rw.WriteHeader(http.StatusNoContent)
 }
 
+// HTMLResponse forms a response with text/html content, set the HTTP status code
+// and logs an error if the writing response process fails.
+func (h *HTTPResponseHandler) HTMLResponse(html []byte) {
+	h.rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	h.rw.WriteHeader(http.StatusOK)
+
+	if _, err := h.rw.Write(html); err != nil {
+		h.log.Error("write HTML HTTP response", zap.Error(err))
+	}
+}
+
 // errorResponse writes a standard JSON error structure to the client
 // and logs the internal error details.
 func (h *HTTPResponseHandler) errorResponse(
