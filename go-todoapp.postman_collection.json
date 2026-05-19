@@ -1,0 +1,313 @@
+{
+  "info": {
+    "_postman_id": "a09e7a3f-f4ef-4ac8-a33f-938569cc036d",
+    "name": "go-todoapp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53753135"
+  },
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "create_user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"full_name\": \"Иванов Иван\",\r\n    \"phone_number\": \"+79168853811\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseurl}}/users",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get_users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/users?limit=&offset=",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": ""
+                },
+                {
+                  "key": "offset",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get_user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/users/100",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "users",
+                "100"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete_user",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/users/100",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "users",
+                "100"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "patch_user",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/users/2",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "tasks",
+      "item": [
+        {
+          "name": "create_task",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Домашка\",\r\n    \"author_user_id\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseurl}}/tasks",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get_tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/tasks?user_id&limit&offset",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": null
+                },
+                {
+                  "key": "limit",
+                  "value": null
+                },
+                {
+                  "key": "offset",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get_task",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/tasks/3",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "tasks",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete_task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/tasks/3993",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "tasks",
+                "3993"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "patch_task",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseurl}}/tasks/1223",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "tasks",
+                "1223"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "statistics",
+      "item": [
+        {
+          "name": "get_statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseurl}}/statistics?user_id&from&to=2026-04-10",
+              "host": [
+                "{{baseurl}}"
+              ],
+              "path": [
+                "statistics"
+              ],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": null
+                },
+                {
+                  "key": "from",
+                  "value": null
+                },
+                {
+                  "key": "to",
+                  "value": "2026-04-10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+        "key": "baseurl",
+        "value": "http://localhost:5050/api/v1"
+    }
+  ]
+}
