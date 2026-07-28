@@ -86,6 +86,9 @@ func (s *HTTPServer) Run(ctx context.Context) error {
 	server := &http.Server{
 		Addr:    s.cfg.Addr,
 		Handler: mux,
+		ReadTimeout: s.cfg.ReadTimeout,
+		WriteTimeout: s.cfg.WriteTimeout,
+		IdleTimeout: s.cfg.IdleTimeout,
 	}
 
 	ch := make(chan error, 1)
@@ -93,7 +96,7 @@ func (s *HTTPServer) Run(ctx context.Context) error {
 	go func() {
 		defer close(ch)
 
-		s.log.Warn("start HTTP server", zap.String("addr", s.cfg.Addr))
+		s.log.Info("start HTTP server", zap.String("addr", s.cfg.Addr))
 
 		err := server.ListenAndServe()
 		if !errors.Is(err, http.ErrServerClosed) {
@@ -107,7 +110,7 @@ func (s *HTTPServer) Run(ctx context.Context) error {
 			return fmt.Errorf("listen and serve HTTP: %w", err)
 		}
 	case <-ctx.Done():
-		s.log.Warn("shutdown HTTP server...")
+		s.log.Info("shutdown HTTP server...")
 
 		shutdownCtx, cancel := context.WithTimeout(
 			context.Background(),
@@ -121,7 +124,7 @@ func (s *HTTPServer) Run(ctx context.Context) error {
 			return fmt.Errorf("shutdown HTTP server: %w", err)
 		}
 
-		s.log.Warn("HTTP server stopped")
+		s.log.Info("HTTP server stopped")
 	}
 
 	return nil

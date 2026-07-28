@@ -1,4 +1,4 @@
-CREATE SCHEMA todoapp;  -- не будет конфликтов с public-схемой
+CREATE SCHEMA todoapp; 
 
 CREATE TABLE todoapp.users (
     id              SERIAL                      PRIMARY KEY,
@@ -16,7 +16,6 @@ CREATE TABLE todoapp.tasks (
     created_at      TIMESTAMPTZ     NOT NULL,
     completed_at    TIMESTAMPTZ,
 
-    -- вызовется, если в операции задействованы completed, created_at и (или) completed_at
     CHECK (
         (completed=FALSE AND completed_at IS NULL)
         OR
