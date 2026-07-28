@@ -9,11 +9,6 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
 )
 
-// pgxRows wraps the standard pgx.Rows to implement the postgres.Rows interface.
-type pgxRows struct {
-	pgx.Rows
-}
-
 // pgxRow wraps the standard pgx.Row to implement the postgres.Row interface.
 type pgxRow struct {
 	pgx.Row
@@ -25,6 +20,27 @@ type pgxRow struct {
 func (r pgxRow) Scan(dest ...any) error {
 	err := r.Row.Scan(dest...)
 	if err != nil {
+		return mapErrors(err)
+	}
+
+	return nil
+}
+
+// pgxRows wraps the standard pgx.Rows to implement the postgres.Rows interface.
+type pgxRows struct {
+	pgx.Rows
+}
+
+func (rs pgxRows) Scan(dest ...any) error {
+	if err := rs.Rows.Scan(dest); err != nil {
+		return mapErrors(err)
+	}
+
+	return nil
+}
+
+func (rs pgxRows) Err() error {
+	if err := rs.Rows.Err(); err != nil {
 		return mapErrors(err)
 	}
 

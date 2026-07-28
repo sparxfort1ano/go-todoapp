@@ -13,6 +13,9 @@ type config struct {
 	Addr            string        `envconfig:"ADDR" required:"true"`
 	ShutdownTimeout time.Duration `envconfig:"SHUTDOWN_TIMEOUT" default:"30s"`
 	AllowedOrigins  []string      `envconfig:"ALLOWED_ORIGINS" required:"true"`
+	ReadTimeout     time.Duration `envconfig:"READ_TIMEOUT" default:"10s"`
+	WriteTimeout    time.Duration `envconfig:"WRITE_TIMEOUT" default:"15s"`
+	IdleTimeout     time.Duration `envconfig:"IDLE_TIMEOUT" default:"60s"`
 }
 
 // newConfig parses the system environment variables with the "HTTP_" prefix

@@ -43,6 +43,7 @@ func (h *HTTPResponseHandler) JSONResponse(
 	}
 }
 
+// NoContentResponse forms a HTTP 204 No Content response.
 func (h *HTTPResponseHandler) NoContentResponse() {
 	h.rw.WriteHeader(http.StatusNoContent)
 }
@@ -79,7 +80,7 @@ func (h *HTTPResponseHandler) errorResponse(
 
 // ErrorResponse maps sentinel errors to the correct
 // HTTP status codes and logging level, ensuring uniform error handling across the app.
-func (h HTTPResponseHandler) ErrorResponse(err error, msg string) {
+func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
 	var (
 		statusCode int
 		logFunc    func(string, ...zap.Field)

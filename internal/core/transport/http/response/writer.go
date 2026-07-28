@@ -31,7 +31,7 @@ func (rw *ResponseWriter) WriteHeader(statusCode int) {
 // without explicitly setting a status code.
 func (rw *ResponseWriter) StatusCode() int {
 	if rw.statusCode == StatusCodeUninitialized {
-		panic("no status code set")
+		return http.StatusOK
 	}
 	return rw.statusCode
 }
