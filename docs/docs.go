@@ -34,13 +34,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Начало промежутка рассмотрения статистики (включительно), формат: YYYY-MM-DD",
+                        "description": "Начало промежутка (включительно), формат: RFC3339 (например, 2026-07-31T21:00:00.000Z)",
                         "name": "from",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Конец промежутка рассмотрения статистики (невключительно), формат: YYYY-MM-DD",
+                        "description": "Конец промежутка (невключительно), формат: RFC3339 (например, 2026-08-01T21:00:00.000Z)",
                         "name": "to",
                         "in": "query"
                     }
@@ -581,7 +581,7 @@ const docTemplate = `{
         "internal_features_statistics_transport_http.GetStatisticsResponse": {
             "type": "object",
             "properties": {
-                "task_average_completion_time": {
+                "tasks_average_completion_time": {
                     "type": "string",
                     "example": "1m30s"
                 },

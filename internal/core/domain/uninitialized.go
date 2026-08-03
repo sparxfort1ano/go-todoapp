@@ -5,16 +5,16 @@ package domain
 import "time"
 
 var (
-	UninializedID      = -1
-	UninializedVersion = -1
+	UninitalizedID      = -1
+	UninitalizedVersion = -1
 )
 
 // NewUserUninitialized creates a new User entity before it is persisted to storage.
 // The ID and Version are set to placeholder values until the database assigns them.
 func NewUserUninitialized(fullName string, phoneNumber *string) User {
 	return NewUser(
-		UninializedID,
-		UninializedVersion,
+		UninitalizedID,
+		UninitalizedVersion,
 		fullName,
 		phoneNumber,
 	)
@@ -28,8 +28,8 @@ func NewTaskUninitialized(
 	authorUserID int,
 ) Task {
 	return NewTask(
-		UninializedID,
-		UninializedVersion,
+		UninitalizedID,
+		UninitalizedVersion,
 		title,
 		description,
 		false,

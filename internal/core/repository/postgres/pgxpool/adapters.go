@@ -32,7 +32,7 @@ type pgxRows struct {
 }
 
 func (rs pgxRows) Scan(dest ...any) error {
-	if err := rs.Rows.Scan(dest); err != nil {
+	if err := rs.Rows.Scan(dest...); err != nil {
 		return mapErrors(err)
 	}
 

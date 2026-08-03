@@ -1296,7 +1296,7 @@
                     <input type="date" class="input-sm input-date" id="sf-from">
                 </div>
                 <div class="filter-group">
-                    <label>По</label>
+                    <label>До</label>
                     <input type="date" class="input-sm input-date" id="sf-to">
                 </div>
                 <div class="filter-spacer"></div>
@@ -1631,13 +1631,13 @@ function closeModal(id, e)      { if (e && e.target !== e.currentTarget) return;
 
 // ─── Utils ───────────────────────────────────────────────
 const esc         = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const fmtDate     = s => s ? new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric', timeZone: 'UTC' }) : '';
-const fmtDateShort= s => s ? new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', timeZone: 'UTC' }) : '';
+const fmtDate     = s => s ? new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : '';
+const fmtDateShort= s => s ? new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '';
 const fmtDateTime = s => {
     if (!s) return '';
     const d = new Date(s);
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', timeZone: 'UTC' })
-         + ' ' + d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', timeZone: 'UTC' });
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric' })
+         + ' ' + d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
 };
 function fmtAge(from) {
     // How long ago from was, in a compact human-readable form
@@ -2117,8 +2117,17 @@ function confirmDelete(e, type, id) {
 async function loadStats() {
     startLoading('stats-container');
     const uid  = document.getElementById('sf-uid').value.trim();
-    const from = document.getElementById('sf-from').value;
-    const to   = document.getElementById('sf-to').value;
+
+    const rawFrom = document.getElementById('sf-from').value;
+    const rawTo   = document.getElementById('sf-to').value;
+    const toLocalISO = (dateStr) => {
+        if (!dateStr) return '';
+        const [y, m, d] = dateStr.split('-');
+        return new Date(y, m - 1, d, 0, 0, 0).toISOString(); 
+    };
+    const from = toLocalISO(rawFrom);
+    const to   = toLocalISO(rawTo);
+
     const p = new URLSearchParams();
     if (uid)  p.set('user_id', uid);
     if (from) p.set('from', from);
