@@ -29,8 +29,8 @@ type GetStatisticsResponse struct {
 // @Tags 		statistics
 // @Produce 	json
 // @Param 		user_id query 	int    	false 			"Фильтрация статистики по конкретному пользователю"
-// @Param 		from 	query 	string 	false 			"Начало промежутка рассмотрения статистики (включительно), формат: YYYY-MM-DD"
-// @Param 		to 		query 	string 	false 			"Конец промежутка рассмотрения статистики (невключительно), формат: YYYY-MM-DD"
+// @Param       from    query   string  false           "Начало промежутка (включительно), формат: RFC3339 (например, 2026-07-31T21:00:00.000Z)"
+// @Param       to      query   string  false           "Конец промежутка (невключительно), формат: RFC3339 (например, 2026-08-01T21:00:00.000Z)"
 // @Success 	200 	{object} GetStatisticsResponse 	"Успешное получение статистики"
 // @Failure 	400 	{object} response.ErrorResponse "Bad request"
 // @Failure		500 	{object} response.ErrorResponse "Internal server error"
@@ -78,7 +78,7 @@ func getUserIDFromToQueryParams(r *http.Request) (*int, *time.Time, *time.Time, 
 		)
 	}
 
-	from, errFrom := request.GetDateQueryParam(r, queryFrom)
+	from, errFrom := request.GetDateQueryParam(r, queryFrom, time.RFC3339)
 	if errFrom != nil {
 		errFrom = fmt.Errorf(
 			"get '%s' query params: %w",
@@ -87,7 +87,7 @@ func getUserIDFromToQueryParams(r *http.Request) (*int, *time.Time, *time.Time, 
 		)
 	}
 
-	to, errTo := request.GetDateQueryParam(r, queryTo)
+	to, errTo := request.GetDateQueryParam(r, queryTo, time.RFC3339)
 	if errTo != nil {
 		errTo = fmt.Errorf(
 			"get '%s' query params: %w",
