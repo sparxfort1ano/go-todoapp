@@ -4,14 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
 func (r *TasksRepository) GetTasks(
 	ctx context.Context,
-	userID *int,
-	page domain.Pagination,
-) ([]domain.Task, error) {
+	params repository.GetTasksParams,
+) (repository.GetTasksResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -23,12 +22,11 @@ func (r *TasksRepository) GetTasks(
 	LIMIT $1
 	OFFSET $2;
 	`
+	args := []any{params.Pagination.Limit, params.Pagination.Offset}
 
-	args := []any{page.Limit, page.Offset}
-
-	if userID != nil {
+	if params.UserID != nil {
 		query = fmt.Sprintf(query, "WHERE author_user_id=$3")
-		args = append(args, userID)
+		args = append(args, params.UserID)
 	} else {
 		query = fmt.Sprintf(query, "")
 	}
@@ -39,7 +37,7 @@ func (r *TasksRepository) GetTasks(
 		args...,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("select tasks: %w", err)
+		return repository.GetTasksResult{}, fmt.Errorf("select tasks: %w", err)
 	}
 	defer rows.Close()
 
@@ -58,14 +56,13 @@ func (r *TasksRepository) GetTasks(
 			&taskModel.AuthorUserID,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("scan tasks: %w", err)
+			return repository.GetTasksResult{}, fmt.Errorf("scan tasks: %w", err)
 		}
 		taskModels = append(taskModels, taskModel)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("next rows: %w", err)
+		return repository.GetTasksResult{}, fmt.Errorf("next rows: %w", err)
 	}
 
-	taskDomains := tasksDomainsFromModels(taskModels)
-	return taskDomains, nil
+	return repository.NewGetTasksResult(modelsToRepo(taskModels)), nil
 }

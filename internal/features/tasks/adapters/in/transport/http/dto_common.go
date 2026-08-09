@@ -3,7 +3,7 @@ package http
 import (
 	"time"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
 )
 
 // TaskDTOResponse represents the outgoing JSON body for multiple task features.
@@ -18,7 +18,7 @@ type TaskDTOResponse struct {
 	AuthorUserID int        `json:"author_user_id" example:"5"`
 }
 
-func taskDTOFromDomain(task domain.Task) TaskDTOResponse {
+func taskDTOFromIn(task in.Task) TaskDTOResponse {
 	return TaskDTOResponse{
 		ID:           task.ID,
 		Version:      task.Version,
@@ -31,11 +31,11 @@ func taskDTOFromDomain(task domain.Task) TaskDTOResponse {
 	}
 }
 
-func taskDTOFromDomains(tasks []domain.Task) []TaskDTOResponse {
+func tasksDTOFromIn(tasks []in.Task) []TaskDTOResponse {
 	tasksDTO := make([]TaskDTOResponse, len(tasks))
 
 	for i, task := range tasks {
-		tasksDTO[i] = taskDTOFromDomain(task)
+		tasksDTO[i] = taskDTOFromIn(task)
 	}
 
 	return tasksDTO

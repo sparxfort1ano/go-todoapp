@@ -1,5 +1,5 @@
-// Package postgres acts as the repository layer for the Tasks feature.
-// It interacts with the PostgreSQL database to perform CRUD operations.
+// Package postgres consists of a set of adapters that adapt the Postgres repository to the outcoming port (ports/out/repository),
+// interacting with models responsible for the actual network interaction with the database.
 package postgres
 
 import (

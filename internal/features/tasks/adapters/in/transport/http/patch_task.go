@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"unicode/utf8"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/request"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/response"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/types"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
 )
 
 // PatchTaskRequest represents the incoming JSON body for a partial task update (DTO).
@@ -100,7 +100,9 @@ func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	taskPatch := taskPatchFromRequest(req)
-	taskDomain, err := h.tasksService.PatchTask(ctx, taskID, taskPatch)
+	serviceParams := in.NewPatchTaskParams(taskID, taskPatch)
+
+	serviceResult, err := h.tasksService.PatchTask(ctx, serviceParams)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -109,14 +111,14 @@ func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := PatchTaskResponse(taskDTOFromDomain(taskDomain))
+	response := PatchTaskResponse(taskDTOFromIn(serviceResult.Task))
 	responseHandler.JSONResponse(response, http.StatusOK)
 }
 
-func taskPatchFromRequest(req PatchTaskRequest) domain.TaskPatch {
-	return domain.NewTaskPatch(
-		req.Title.ToDomain(),
-		req.Description.ToDomain(),
-		req.Completed.ToDomain(),
+func taskPatchFromRequest(req PatchTaskRequest) in.TaskPatch {
+	return in.NewTaskPatch(
+		in.Nullable[string](req.Title.Nullable),
+		in.Nullable[string](req.Description.Nullable),
+		in.Nullable[bool](req.Completed.Nullable),
 	)
 }

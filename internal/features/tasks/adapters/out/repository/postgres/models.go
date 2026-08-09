@@ -3,7 +3,7 @@ package postgres
 import (
 	"time"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
 // TaskModel represents the database schema for a user (DAO).
@@ -18,8 +18,8 @@ type TaskModel struct {
 	AuthorUserID int
 }
 
-func taskDomainFromModel(taskModel TaskModel) domain.Task {
-	return domain.NewTask(
+func modelToRepo(taskModel TaskModel) repository.Task {
+	return repository.NewTask(
 		taskModel.ID,
 		taskModel.Version,
 		taskModel.Title,
@@ -31,12 +31,12 @@ func taskDomainFromModel(taskModel TaskModel) domain.Task {
 	)
 }
 
-func tasksDomainsFromModels(taskModels []TaskModel) []domain.Task {
-	domains := make([]domain.Task, len(taskModels))
+func modelsToRepo(taskModels []TaskModel) []repository.Task {
+	tasks := make([]repository.Task, len(taskModels))
 
 	for i, model := range taskModels {
-		domains[i] = taskDomainFromModel(model)
+		tasks[i] = modelToRepo(model)
 	}
 
-	return domains
+	return tasks
 }
