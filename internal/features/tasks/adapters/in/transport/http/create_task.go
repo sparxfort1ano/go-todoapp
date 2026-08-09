@@ -3,10 +3,10 @@ package http
 import (
 	"net/http"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/request"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/response"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
 )
 
 // CreateTaskRequest represents the incoming JSON body for creating a task (DTO).
@@ -47,9 +47,13 @@ func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskDomain := domainFromDTO(req)
+	serviceParams := in.NewCreateTaskParams(
+		req.Title,
+		req.Description,
+		req.AuthorUserID,
+	)
 
-	taskDomain, err := h.tasksService.CreateTask(ctx, taskDomain)
+	serviceResult, err := h.tasksService.CreateTask(ctx, serviceParams)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -58,14 +62,6 @@ func (h *TasksHTTPHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := CreateTaskResponse(taskDTOFromDomain(taskDomain))
+	response := CreateTaskResponse(taskDTOFromIn(serviceResult.Task))
 	responseHandler.JSONResponse(response, http.StatusCreated)
-}
-
-func domainFromDTO(dto CreateTaskRequest) domain.Task {
-	return domain.NewTaskUninitialized(
-		dto.Title,
-		dto.Description,
-		dto.AuthorUserID,
-	)
 }

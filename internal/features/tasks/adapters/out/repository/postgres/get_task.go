@@ -5,15 +5,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	errs "github.com/sparxfort1ano/go-todoapp/internal/core/errors"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
 func (r *TasksRepository) GetTask(
 	ctx context.Context,
-	id int,
-) (domain.Task, error) {
+	params repository.GetTaskParams,
+) (repository.GetTaskResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -23,7 +23,7 @@ func (r *TasksRepository) GetTask(
 	WHERE id=$1;
 	`
 
-	row := r.pool.QueryRow(ctx, query, id)
+	row := r.pool.QueryRow(ctx, query, params.ID)
 
 	var taskModel TaskModel
 	if err := row.Scan(
@@ -37,15 +37,14 @@ func (r *TasksRepository) GetTask(
 		&taskModel.AuthorUserID,
 	); err != nil {
 		if errors.Is(err, postgres.ErrNoRows) {
-			return domain.Task{}, fmt.Errorf(
+			return repository.GetTaskResult{}, fmt.Errorf(
 				"task with id='%d': %w",
-				id,
+				params.ID,
 				errs.ErrNotFound,
 			)
 		}
-		return domain.Task{}, fmt.Errorf("scan error: %w", err)
+		return repository.GetTaskResult{}, fmt.Errorf("scan error: %w", err)
 	}
 
-	taskDomain := taskDomainFromModel(taskModel)
-	return taskDomain, nil
+	return repository.NewGetTaskResult(modelToRepo(taskModel)), nil
 }

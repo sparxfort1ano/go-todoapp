@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/request"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/response"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
 )
 
 // GetTasksResponse represents the outgoing JSON body after getting a tasks slice (JSON).
@@ -40,8 +40,10 @@ func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := domain.NewPagination(limit, offset)
-	taskDomain, err := h.tasksService.GetTasks(ctx, userID, page)
+	page := in.NewPagination(limit, offset)
+	serviceParams := in.NewGetTasksParams(page, userID)
+
+	serviceResult, err := h.tasksService.GetTasks(ctx, serviceParams)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,
@@ -50,7 +52,7 @@ func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := GetTasksResponse(taskDTOFromDomains(taskDomain))
+	response := GetTasksResponse(tasksDTOFromIn(serviceResult.Tasks))
 	responseHandler.JSONResponse(response, http.StatusOK)
 }
 

@@ -4,17 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
 func (s *TasksService) GetTask(
 	ctx context.Context,
-	id int,
-) (domain.Task, error) {
-	task, err := s.tasksRepository.GetTask(ctx, id)
+	params in.GetTaskParams,
+) (in.GetTaskResult, error) {
+	repoParams := repository.NewGetTaskParams(params.ID)
+	repoResult, err := s.tasksRepository.GetTask(ctx, repoParams)
 	if err != nil {
-		return domain.Task{}, fmt.Errorf("get task from repository: %w", err)
+		return in.GetTaskResult{}, fmt.Errorf("get task from repository: %w", err)
 	}
 
-	return task, nil
+	return in.NewGetTaskResult(repoTaskToIn(repoResult.Task)), nil
 }

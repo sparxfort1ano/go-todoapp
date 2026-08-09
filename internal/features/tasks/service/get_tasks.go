@@ -5,21 +5,26 @@ import (
 	"fmt"
 
 	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
 func (s *TasksService) GetTasks(
 	ctx context.Context,
-	userID *int,
-	page domain.Pagination,
-) ([]domain.Task, error) {
+	params in.GetTasksParams,
+) (in.GetTasksResult, error) {
+	page := domain.NewPagination(params.Pagination.Limit, params.Pagination.Offset)
 	if err := page.Validate(); err != nil {
-		return nil, err
+		return in.GetTasksResult{}, err
 	}
 
-	tasks, err := s.tasksRepository.GetTasks(ctx, userID, page)
+	repoPage := repository.NewPagination(page.Limit, page.Offset)
+	repoParams := repository.NewGetTasksParams(repoPage, params.UserID)
+
+	repoResult, err := s.tasksRepository.GetTasks(ctx, repoParams)
 	if err != nil {
-		return nil, fmt.Errorf("get tasks: %w", err)
+		return in.GetTasksResult{}, fmt.Errorf("get tasks from repository: %w", err)
 	}
 
-	return tasks, nil
+	return in.NewGetTasksResult(outTasksToIn(repoResult.Tasks)), nil
 }

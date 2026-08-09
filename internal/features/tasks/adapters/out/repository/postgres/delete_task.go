@@ -5,12 +5,13 @@ import (
 	"fmt"
 
 	errs "github.com/sparxfort1ano/go-todoapp/internal/core/errors"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
 func (r *TasksRepository) DeleteTask(
 	ctx context.Context,
-	id int,
-) error {
+	params repository.DeleteTaskParams,
+) (repository.DeleteTaskResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -19,18 +20,18 @@ func (r *TasksRepository) DeleteTask(
 	WHERE id=$1;
 	`
 
-	cmdTag, err := r.pool.Exec(ctx, query, id)
+	cmdTag, err := r.pool.Exec(ctx, query, params.ID)
 	if err != nil {
-		return fmt.Errorf("exec query: %w", err)
+		return repository.DeleteTaskResult{}, fmt.Errorf("exec query: %w", err)
 	}
 
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf(
+		return repository.DeleteTaskResult{}, fmt.Errorf(
 			"task with id=`%d`: %w",
-			id,
+			params.ID,
 			errs.ErrNotFound,
 		)
 	}
 
-	return nil
+	return repository.NewDeleteTaskResult(), nil
 }

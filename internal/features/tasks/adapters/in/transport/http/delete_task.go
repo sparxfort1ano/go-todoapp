@@ -6,6 +6,7 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/request"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/response"
+    "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/in"
 )
 
 // DeleteTask processes the HTTP request to delete all the data
@@ -34,7 +35,9 @@ func (h *TasksHTTPHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.tasksService.DeleteTask(ctx, taskID); err != nil {
+	serviceParams := in.NewDeleteTaskParams(taskID)
+
+	if _, err := h.tasksService.DeleteTask(ctx, serviceParams); err != nil {
 		responseHandler.ErrorResponse(
 			err,
 			"failed to delete task",

@@ -15,12 +15,10 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/server"
 	statsPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/repository/postgres"
 	statsService "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/service"
-
 	statsHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/transport/http"
-
-	tasksPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/repository/postgres"
+	tasksHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/in/transport/http"
+	tasksPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/out/repository/postgres"
 	tasksService "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/service"
-	tasksHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/transport/http"
 	usersPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/users/repository/postgres"
 	usersService "github.com/sparxfort1ano/go-todoapp/internal/features/users/service"
 	usersHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/users/transport/http"

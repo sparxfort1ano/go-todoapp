@@ -5,16 +5,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sparxfort1ano/go-todoapp/internal/core/domain"
 	errs "github.com/sparxfort1ano/go-todoapp/internal/core/errors"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
-func (r *TasksRepository) PatchTask(
+func (r *TasksRepository) UpdateTask(
 	ctx context.Context,
-	id int,
-	task domain.Task,
-) (domain.Task, error) {
+	params repository.UpdateTaskParams,
+) (repository.UpdateTaskResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
@@ -39,7 +38,7 @@ func (r *TasksRepository) PatchTask(
 		completed_at,
 		author_user_id;
 	`
-
+	task := params.Task
 	row := r.pool.QueryRow(
 		ctx,
 		query,
@@ -63,15 +62,14 @@ func (r *TasksRepository) PatchTask(
 		&taskModel.AuthorUserID,
 	); err != nil {
 		if errors.Is(err, postgres.ErrNoRows) {
-			return domain.Task{}, fmt.Errorf(
+			return repository.UpdateTaskResult{}, fmt.Errorf(
 				"task with id='%d' concurrently accessed: %w",
-				id,
+				task.ID,
 				errs.ErrConflict,
 			)
 		}
-		return domain.Task{}, fmt.Errorf("scan error: %w", err)
+		return repository.UpdateTaskResult{}, fmt.Errorf("scan error: %w", err)
 	}
 
-	taskDomain := taskDomainFromModel(taskModel)
-	return taskDomain, nil
+	return repository.NewUpdateTaskResult(modelToRepo(taskModel)), nil
 }
