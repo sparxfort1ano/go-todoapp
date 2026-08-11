@@ -11,12 +11,14 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/core/config"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/logger"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/repository/postgres/pgxpool"
+	redispool "github.com/sparxfort1ano/go-todoapp/internal/core/repository/redis/goredis"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/middleware"
 	"github.com/sparxfort1ano/go-todoapp/internal/core/transport/http/server"
 	statsPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/repository/postgres"
 	statsService "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/service"
 	statsHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/statistics/transport/http"
 	tasksHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/in/transport/http"
+	tasksCached "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/out/repository/cached"
 	tasksPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/out/repository/postgres"
 	tasksService "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/service"
 	usersPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/users/repository/postgres"
@@ -51,28 +53,41 @@ func main() {
 
 	logger.Debug("application time zone", zap.Any("zone", time.Local))
 
-	logger.Debug("initializing postgres conection pool")
-	pool, err := pgxpool.NewPool(
+	logger.Debug("initializing postgres connection pool")
+	pgxPool, err := pgxpool.NewPool(
 		ctx,
 		pgxpool.NewConfigMust(),
 	)
 	if err != nil {
 		logger.Fatal("failed to initialize postgres connection pool", zap.Error(err))
 	}
-	defer pool.Close()
+	defer pgxPool.Close()
+
+	logger.Debug("initializing redis connection pool")
+	redisPool, err := redispool.NewPool(
+		ctx,
+		redispool.NewConfigMust(),
+	)
+	if err != nil {
+		logger.Fatal("failed to initialize redis client", zap.Error(err))
+	}
+	defer redisPool.Close()
 
 	logger.Debug("initializing feature", zap.String("feature", "users"))
-	usersRepository := usersPostgres.NewUsersRepository(pool)
+	usersRepository := usersPostgres.NewUsersRepository(pgxPool)
 	usersService := usersService.NewUsersService(usersRepository)
 	usersHTTPHandler := usersHTTP.NewUsersHTTPHandler(usersService)
 
 	logger.Debug("initializing feature", zap.String("feature", "tasks"))
-	tasksRepository := tasksPostgres.NewTasksRepository(pool)
+	tasksRepository := tasksCached.NewCachedRepository(
+		redisPool,
+		tasksPostgres.NewTasksRepository(pgxPool),
+	)
 	tasksService := tasksService.NewTaskService(tasksRepository)
 	tasksHTTPHandler := tasksHTTP.NewTaskHTTPHandler(tasksService)
 
 	logger.Debug("initializing feature", zap.String("feature", "statistics"))
-	statisticsRepository := statsPostgres.NewStatisticsRepository(pool)
+	statisticsRepository := statsPostgres.NewStatisticsRepository(pgxPool)
 	statisticsService := statsService.NewStatisticsService(statisticsRepository)
 	statisticsHTTPHandler := statsHTTP.NewStatisticsHTTPHandler(statisticsService)
 
