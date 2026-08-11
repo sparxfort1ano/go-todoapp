@@ -33,6 +33,14 @@ services:
         - pgdata:/var/lib/postgresql/data
       restart: always
 
+    todoapp-redis:
+      image: redis:8.8.1
+      container_name: todoapp-env-redis
+      command: redis-server --requirepass ${REDIS_PASSWORD}
+      volumes:
+        - redis_data:/var/lib/redis/data
+      restart: always
+
     todoapp-postgres-migrate:
       image: migrate/migrate:v4.19.1
       volumes: 
@@ -40,10 +48,16 @@ services:
 
     port-forwarder:
       image: alpine/socat:1.8.0.3
-      container_name: todoapp-postgres-port-forwarder
-      command: tcp-listen:5432,fork,reuseaddr tcp-connect:todoapp-postgres:5432
+      container_name: todoapp-env-port-forwarder
+      entrypoint: | 
+        /bin/sh -c "
+          socat -d -d tcp-listen:5432,fork,reuseaddr tcp-connect:todoapp-postgres:5432 &
+          socat -d -d tcp-listen:6379,fork,reuseaddr tcp-connect:todoapp-redis:6379 &
+          wait
+        "
       ports:
         - "127.0.0.1:5432:5432"
+        - "127.0.0.1:6379:6379"
 
     swagger:
       build:
@@ -59,3 +73,4 @@ services:
 
 volumes:
   pgdata: {}
+  redis_data: {}

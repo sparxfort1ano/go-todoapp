@@ -8,10 +8,10 @@ export PROJECT_ROOT=${shell pwd}
 
 
 env-up: ## Env: Launch the project environment
-	@docker compose up -d todoapp-postgres
+	@docker compose up -d todoapp-postgres todoapp-redis
 
 env-down: ## Env: Stop the project environment
-	@docker compose down todoapp-postgres
+	@docker compose down todoapp-postgres todoapp-redis
 
 env-cleanup: ## Env: Clear the project environment
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
@@ -83,6 +83,7 @@ migrate-action: ## PostgreSQL: Call a migrations command
 todoapp-run: ## Go: Execute the Go application locally (for local development and testing)
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost && \
+	export REDIS_HOST=localhost && \
 	go mod tidy && \
 	go run ${PROJECT_ROOT}/cmd/todoapp/main.go
 
