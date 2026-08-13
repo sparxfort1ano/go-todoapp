@@ -1,4 +1,18 @@
 services:
+    web-server:
+      image: caddy:2.11.4-alpine
+      container_name: web-server
+      environment:
+        - CADDY_HOST=${CADDY_HOST:-localhost}
+      volumes:
+        - ${PROJECT_ROOT}/web/Caddyfile:/etc/caddy/Caddyfile
+        - ${PROJECT_ROOT}/web/public:/web/public
+        - caddy_data:/data
+      ports:
+        - "80:80"
+        - "443:443"
+      restart: unless-stopped
+
     todoapp:
       build:
         context: ${PROJECT_ROOT}
@@ -74,3 +88,4 @@ services:
 volumes:
   pgdata: {}
   redis_data: {}
+  caddy_data: {}

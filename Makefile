@@ -95,6 +95,14 @@ todoapp-undeploy: ## Go: Stop the Go application in the Docker Compose service
 
 
 
+web-deploy: ## Web-Server: Start Caddy in the Docker Compose service
+	@docker compose up -d --build web-server
+
+web-undeploy: ## Web-Сервер: Stop the Caddy web-server in the Docker Compose service
+	@docker compose down web-server
+
+
+
 help: ## Show help for commands
 	@echo "=== Help ==="
 	@echo ""
