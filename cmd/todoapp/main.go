@@ -24,9 +24,7 @@ import (
 	usersPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/users/repository/postgres"
 	usersService "github.com/sparxfort1ano/go-todoapp/internal/features/users/service"
 	usersHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/users/transport/http"
-	webFS "github.com/sparxfort1ano/go-todoapp/internal/features/web/repository/filesystem"
-	webService "github.com/sparxfort1ano/go-todoapp/internal/features/web/service"
-	webHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/web/transport/http"
+
 	"go.uber.org/zap"
 
 	_ "github.com/sparxfort1ano/go-todoapp/docs"
@@ -91,11 +89,6 @@ func main() {
 	statisticsService := statsService.NewStatisticsService(statisticsRepository)
 	statisticsHTTPHandler := statsHTTP.NewStatisticsHTTPHandler(statisticsService)
 
-	logger.Debug("initializing feature", zap.String("feature", "web"))
-	webRepository := webFS.NewWebRepository()
-	webService := webService.NewWebService(webRepository)
-	webHTTPHandler := webHTTP.NewWebHTTPHandler(webService)
-
 	logger.Debug("initializing HTTP server")
 	httpConfig := server.NewConfigMust()
 	httpServer := server.NewHTTPServer(
@@ -115,7 +108,6 @@ func main() {
 	httpServer.RegisterAPIRouters(
 		apiVersionRouterV1,
 	)
-	httpServer.RegisterRoutes(webHTTPHandler.Routes()...)
 	httpServer.RegisterSwagger()
 
 	if err := httpServer.Run(ctx); err != nil {
