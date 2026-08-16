@@ -103,6 +103,19 @@ web-undeploy: ## Web-Сервер: Stop the Caddy web-server in the Docker Compo
 
 
 
+load-test: ## Tests: Load test
+	@go run ./scripts/load_test \
+		-users 100 \
+    	-tasks-per-user 30 \
+    	-concurrency 50 \
+    	-phase-duration 30s \
+    	-read-burst 10 \
+    	-mixed-reads 8 \
+    	-mixed-writes 2 \
+    	-report ${PROJECT_ROOT}/out/load_test/result.txt
+
+
+
 help: ## Show help for commands
 	@echo "=== Help ==="
 	@echo ""
