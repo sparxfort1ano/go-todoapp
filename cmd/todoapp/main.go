@@ -20,6 +20,7 @@ import (
 	tasksHTTP "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/in/transport/http"
 	tasksCached "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/out/repository/cached"
 	tasksPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/adapters/out/repository/postgres"
+	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 	tasksService "github.com/sparxfort1ano/go-todoapp/internal/features/tasks/service"
 	usersPostgres "github.com/sparxfort1ano/go-todoapp/internal/features/users/repository/postgres"
 	usersService "github.com/sparxfort1ano/go-todoapp/internal/features/users/service"
@@ -61,15 +62,20 @@ func main() {
 	}
 	defer pgxPool.Close()
 
-	logger.Debug("initializing redis connection pool")
-	redisPool, err := redispool.NewPool(
-		ctx,
-		redispool.NewConfigMust(),
-	)
-	if err != nil {
-		logger.Fatal("failed to initialize redis client", zap.Error(err))
+	redisCfg := redispool.NewConfigMust()
+	var redisPool *redispool.Pool
+	if redisCfg.Enabled {
+		var err error
+		logger.Debug("initializing redis connection pool")
+		redisPool, err = redispool.NewPool(
+			ctx,
+			redisCfg,
+		)
+		if err != nil {
+			logger.Fatal("failed to initialize redis client", zap.Error(err))
+		}
+		defer redisPool.Close()
 	}
-	defer redisPool.Close()
 
 	logger.Debug("initializing feature", zap.String("feature", "users"))
 	usersRepository := usersPostgres.NewUsersRepository(pgxPool)
@@ -77,10 +83,15 @@ func main() {
 	usersHTTPHandler := usersHTTP.NewUsersHTTPHandler(usersService)
 
 	logger.Debug("initializing feature", zap.String("feature", "tasks"))
-	tasksRepository := tasksCached.NewCachedRepository(
-		redisPool,
-		tasksPostgres.NewTasksRepository(pgxPool),
-	)
+	var tasksRepository repository.TasksRepository
+	if redisPool != nil {
+		tasksRepository = tasksCached.NewCachedRepository(
+			redisPool,
+			tasksPostgres.NewTasksRepository(pgxPool),
+		)
+	} else {
+		tasksRepository = tasksPostgres.NewTasksRepository(pgxPool)
+	}
 	tasksService := tasksService.NewTaskService(tasksRepository)
 	tasksHTTPHandler := tasksHTTP.NewTaskHTTPHandler(tasksService)
 

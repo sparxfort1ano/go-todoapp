@@ -13,6 +13,7 @@ type config struct {
 	Password string        `envconfig:"PASSWORD" required:"true"`
 	DB       int           `envconfig:"DB" default:"0"`
 	TTL      time.Duration `envconfig:"TTL" default:"1h30m"`
+	Enabled  bool          `envconfig:"ENABLED" default:"true"`
 }
 
 func newConfig() (config, error) {
