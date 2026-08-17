@@ -6,7 +6,7 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
-// TaskModel represents the database schema for a user (DAO).
+// TaskModel represents the database schema for a task (DAO).
 type TaskModel struct {
 	ID           int
 	Version      int

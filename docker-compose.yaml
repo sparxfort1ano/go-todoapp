@@ -34,7 +34,7 @@ services:
         - ${PROJECT_ROOT}/out/logs:/app/out/logs
       ports:
         - "5050:5050"
-      restart: always
+      restart: unless-stopped
 
     todoapp-postgres:
       image: postgres:16.13-bookworm
@@ -45,15 +45,15 @@ services:
         - POSTGRES_DB=${POSTGRES_DB}
       volumes:
         - pgdata:/var/lib/postgresql/data
-      restart: always
+      restart: unless-stopped
 
     todoapp-redis:
       image: redis:8.8.1
       container_name: todoapp-env-redis
       command: redis-server --requirepass ${REDIS_PASSWORD}
       volumes:
-        - redis_data:/var/lib/redis/data
-      restart: always
+        - redis_data:/data
+      restart: unless-stopped
 
     todoapp-postgres-migrate:
       image: migrate/migrate:v4.19.1

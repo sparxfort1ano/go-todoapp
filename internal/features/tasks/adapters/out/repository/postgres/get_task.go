@@ -10,6 +10,9 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
+// GetTask executes the SQL query to read the given row
+// according to the task identificator.
+// It maps the resulting database row back into a repository entity.
 func (r *TasksRepository) GetTask(
 	ctx context.Context,
 	params repository.GetTaskParams,

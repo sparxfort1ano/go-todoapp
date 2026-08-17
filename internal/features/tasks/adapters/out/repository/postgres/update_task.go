@@ -10,6 +10,11 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
+// UpdateTask executes the SQL query to patch the given row
+// according to the task identificator.
+// It uses Optimistic Concurrency Control by checking the task's Version
+// to prevent lost updates.
+// It maps the resulting database row back into a repository entity.
 func (r *TasksRepository) UpdateTask(
 	ctx context.Context,
 	params repository.UpdateTaskParams,
