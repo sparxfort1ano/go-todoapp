@@ -8,6 +8,8 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
+// DeleteTask executes the SQL query to delete the given row
+// according to the task identificator.
 func (r *TasksRepository) DeleteTask(
 	ctx context.Context,
 	params repository.DeleteTaskParams,

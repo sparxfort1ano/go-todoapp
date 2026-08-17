@@ -7,6 +7,9 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
+// GetTasks executes the SQL query to read the given rows
+// according to the limit, offset and user identificator filter.
+// It maps the resulting database row back into a domain entity.
 func (r *TasksRepository) GetTasks(
 	ctx context.Context,
 	params repository.GetTasksParams,

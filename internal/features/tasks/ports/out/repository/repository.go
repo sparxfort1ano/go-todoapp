@@ -31,8 +31,6 @@ type TasksRepository interface {
 		params DeleteTaskParams,
 	) (DeleteTaskResult, error)
 
-	// UpdateTask uses Optimistic Concurrency Control by checking the task's Version
-	// to prevent lost updates.
 	UpdateTask(
 		ctx context.Context,
 		params UpdateTaskParams,

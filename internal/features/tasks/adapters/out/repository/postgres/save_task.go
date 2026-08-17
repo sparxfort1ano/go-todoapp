@@ -10,6 +10,8 @@ import (
 	"github.com/sparxfort1ano/go-todoapp/internal/features/tasks/ports/out/repository"
 )
 
+// SaveTask executes the SQL query to insert a new task into the database.
+// It maps the resulting database row back into a repository entity.
 func (r *TasksRepository) SaveTask(
 	ctx context.Context,
 	params repository.SaveTaskParams,
